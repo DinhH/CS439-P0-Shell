@@ -116,16 +116,15 @@ void eval(char *cmdline)
 	{
 		int child = fork();
 		int status;
-		int val, num;
 		if(child==0)
 		{
-			num = execv(arg[0],arg);
-			exit(0);
+			int val = execv(arg[0],arg);
+			exit(val);
 		}
 		else
 		{
 			waitpid(child,&status,0);
-			val=WEXITSTATUS(status);
+			//WEXITSTATUS(status);
 		}
 	}
 	return;
