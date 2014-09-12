@@ -104,7 +104,31 @@ int main(int argc, char **argv)
 */
 void eval(char *cmdline) 
 {
-    return;
+	char **arg = (char**)malloc(sizeof(*cmdline));
+	int bg;
+	
+	bg = parseline(cmdline,arg);
+	if(builtin_cmd(arg)==1)
+	{
+		return;
+	}
+	else
+	{
+		int child = fork();
+		int status;
+		int val, num;
+		if(child==0)
+		{
+			num = execv(arg[0],arg);
+			exit(0);
+		}
+		else
+		{
+			waitpid(child,&status,0);
+			val=WEXITSTATUS(status);
+		}
+	}
+	return;
 }
 
 
@@ -116,6 +140,10 @@ void eval(char *cmdline)
  */
 int builtin_cmd(char **argv) 
 {
+	//Quit Statement?
+	if(strcmp(argv[0],"quit")==0){
+		exit(1);
+	}
     return 0;     /* not a builtin command */
 }
 
