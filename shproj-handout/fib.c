@@ -60,7 +60,60 @@ int main(int argc, char **argv)
 static void 
 doFib(int n, int doPrint)
 {
-  
+	pid_t child1;
+	pid_t child2;
+	int status1;
+	int status2;
+	int val1;
+	int val2;
+
+	if (n == 0 || n == 1) {
+		if (doPrint == 1){
+			printf( "%d\n", n);
+			exit(n);
+		}
+		else{
+			exit(n);
+		}
+	} 	
+
+	child1 = fork();
+
+	if (child1 == 0){
+		doFib(n-1, 0);//doesn't return;
+	}
+	else {
+		waitpid(child1,&status1,0);	
+		val1 = WEXITSTATUS(status1);	
+		child2 = fork();
+		if (child2 == 0){
+			doFib(n-2, 0);
+		}
+		else {
+			waitpid(child2, &status2,0);
+			val2 = WEXITSTATUS(status2);
+			if (doPrint == 1) {
+				printf("%d\n", (val1 + val2));
+			}
+			else {
+				exit(val1 + val2);
+			}
+		}
+	}
 }
+/*	if (child1 == 0) {
+	printf("child pid is : %d\n",child1);
+	}
+	else {
+		child2 = fork();
+		if (child2 == 0) {
+		printf("child 2 pid: %d\n" ,child2);
+		}
+		else {
+	printf("the value of the parent pid is : %d\n", getpid());
+		}
+	}
+}*/
+	//printf("child pid is : %d\n",child1);
 
 
