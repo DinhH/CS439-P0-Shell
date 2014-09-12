@@ -108,21 +108,17 @@ void eval(char *cmdline)
 	int bg;
 	
 	bg = parseline(cmdline,arg);
-	if(builtin_cmd(arg)==1)
-	{
+	if(builtin_cmd(arg)==1){
 		return;
 	}
-	else
-	{
+	else{
 		int child = fork();
 		int status;
-		if(child==0)
-		{
+		if(child==0){
 			int val = execv(arg[0],arg);
 			exit(val);
 		}
-		else
-		{
+		else{
 			waitpid(child,&status,0);
 			//WEXITSTATUS(status);
 		}
@@ -137,8 +133,7 @@ void eval(char *cmdline)
  * Return 1 if a builtin command was executed; return 0
  * if the argument passed in is *not* a builtin command.
  */
-int builtin_cmd(char **argv) 
-{
+int builtin_cmd(char **argv) {
 	//Quit Statement?
 	if(strcmp(argv[0],"quit")==0){
 		exit(1);
