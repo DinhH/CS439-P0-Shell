@@ -104,7 +104,15 @@ int main(int argc, char **argv)
 */
 void eval(char *cmdline) 
 {
-	char **arg = (char**)malloc(sizeof(*cmdline));
+	char **arg;
+	/*printf(" %s\n ",cmdline);
+	if(strcmp(cmdline,NULL)==0)
+	{
+		printf("woo");
+		return;
+	}
+	else*/
+	arg=(char**)malloc(sizeof(*cmdline));
 	int bg;
 	
 	bg = parseline(cmdline,arg);
@@ -139,6 +147,10 @@ void eval(char *cmdline)
  */
 int builtin_cmd(char **argv) 
 {
+	/*if(&argv==0)
+	{	
+		exit(0);
+	}*/
 	//Quit Statement?
 	if(strcmp(argv[0],"quit")==0){
 		exit(1);
