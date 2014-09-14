@@ -17,6 +17,9 @@
  * Finally, loop forever, printing "Still here\n" once every
  * second.
  */
+
+void INThandler(int);
+
 int main(int argc, char **argv)
 {
    pid_t child;
@@ -34,21 +37,20 @@ int main(int argc, char **argv)
 	
    while(run!=0)
    {
-      struct timespec time1,time2;
+      struct timespec time1;
       int num;
 
       time1.tv_sec = 1;
       time1.tv_nsec = 0;
-      // time2.tv_sec = 0;
       num = nanosleep(&time1,NULL);
       if(num<0)
-         printf("woops\n");
+         printf("woops\n"); //filler
  
      //Still Here prints funky
      //EXPLAINATION: our code was printing funky because
      //the child and parent were executing the code at the 
      //same time. I fixed this with the conditional up top
-     //so that only the child process executes. 
+     //so that only the child process executes and the parent waits. 
       else if(num==0)
       {
 	ssize_t bytes; 
@@ -59,19 +61,31 @@ int main(int argc, char **argv)
 	   exit(-999);
       }
       
-      /*
-      else
+      signal(SIGINT,INThandler);
+     
+     /* //If user hits crtl-c
+      
       {
          ssize_t bytes; 
          const int STDOUT = 1; 
          bytes = write(STDOUT, "Nice try.\n", 10); 
          if(bytes != 10) 
          exit(-999);
-      }
-      sleep(1);*/
+      }*/
+     
    }   
    
   return 0;
 }
-
-
+//ISSUES: ^C prints when running; sometimes nanosecond
+//num value is less than zero and prints "woops";
+void INThandler(int sig)
+{
+   signal(sig,SIG_IGN);
+   ssize_t bytes; 
+   const int STDOUT = 1; 
+   bytes = write(STDOUT, "Nice try.\n", 10); 
+   if(bytes != 10) 
+      exit(-999);
+   signal(SIGINT,INThandler);
+}
