@@ -19,13 +19,18 @@
  */
 int main(int argc, char **argv)
 {
-   int child;
+   pid_t child;
+   int status;
    int run = 1; //if kill hasn't been called
 
-   //GetPID prints 2 nums
+   
    child = fork();
-   printf("%d\n",getpid());
-
+   
+   if(child!=0)
+   {
+      waitpid(child,&status,0); //EXPLAINATION BELOW  
+   }	
+   printf("%d\n",getpid()); // --> FIXED PID PRINTING TWICE
 	
    while(run!=0)
    {
@@ -33,13 +38,18 @@ int main(int argc, char **argv)
       int num;
 
       time1.tv_sec = 1;
-      time2.tv_sec = 0;
-      num = nanosleep(&time1,&time2);
+      time1.tv_nsec = 0;
+      // time2.tv_sec = 0;
+      num = nanosleep(&time1,NULL);
       if(num<0)
          printf("woops\n");
  
      //Still Here prints funky
-     else if(num==0)
+     //EXPLAINATION: our code was printing funky because
+     //the child and parent were executing the code at the 
+     //same time. I fixed this with the conditional up top
+     //so that only the child process executes. 
+      else if(num==0)
       {
 	ssize_t bytes; 
 	const int STDOUT = 1; 
