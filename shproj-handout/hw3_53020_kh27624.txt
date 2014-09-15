@@ -1,0 +1,77 @@
+     How can fairness and throughput be competing goals for a scheduler? Give an example where a fair scheduler makes bad use of the CPU and an example where a high-throughput scheduler is unfair.
+
+    Compare and contrast user threads and kernel threads.
+
+    A standardized C language threads programming interface has been developed for UNIX systems, IEEE POSIX 1003.1c. Thread implementations that adhere to this standard are known as POSIX threads, or Pthreads. Using Pthreads, write a C program that creates three new threads and assigns each of them a number. Each thread should print the numbers 1-10, one per line, with its number beginning the line, so that the beginning output from thread 1 would look like the following:
+
+    1: 1
+    1: 2
+    1: 3
+
+    The original thread should wait for the new threads to finish and then print a statement notifying the user that the application is finished.
+
+    Explain the output. Turn in your code, output, and explanation.
+
+    Hint: man 7 pthreads provides an overview of pthreads and should help you get started. Notice that to compile code that uses pthreads you need to include the -pthread flag.
+
+    In the code below, indicate where each variable is stored (e.g., stack, heap, static data segment), and whether that variable would be shared by the threads in a multi-threaded program. If applicable, indicate where the space that variable points to is allocated.
+
+    int i;
+    char * j;
+
+    void foo(int a){
+
+       int b;
+       static float c;
+
+       /*do stuff*/
+    }
+
+    int main(int argc, char**argv){
+
+       int * m;
+       int g;
+       double z;
+
+       j = malloc(MAXBUF*sizeof(char));
+
+       createThread(0, foo(), 2);
+       createThread(1, foo(), 4);
+
+       /*do stuff*/
+    }
+
+    What does the function pthread_detach() do? What default behavior of threads does it alter? When might it be useful?
+
+    Given the following pseudocode:
+
+    int sharedData;
+
+    void* total(){
+            int i;
+            for(i = 0; i < 100; i++)
+                    sharedData = sharedData + 1;
+    }
+
+    int main(){
+            sharedData = 0;
+
+            // start running 2 threads executing total() concurrently and wait for them to finish execution
+            pthread_t thread[2];
+            int i;
+
+            for(i = 0; i < 2; i++)
+                    pthread_create(&thread[i], NULL, total, NULL);
+
+            for(i = 0; i < 2; i++)
+                    pthread_join(thread[i], NULL);
+
+            printf("%d\n", sharedData);
+
+            return 0;
+    }
+
+        On a signle processor machine, what are possible outputs of this program? (Determine both lower bound and upper bound of the output of this program) Justify your answer.
+        Solve the above problem if we run m concurrent threads instead of two threads.
+
+

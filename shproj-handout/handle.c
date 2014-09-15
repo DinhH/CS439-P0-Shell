@@ -28,17 +28,31 @@ int main(int argc, char **argv)
 
    child = fork();
    
+<<<<<<< HEAD
 	if(child!=0){
 		 waitpid(child,&status,0); //EXPLAINATION BELOW  
 	}
    printf("%d\n",getpid()); // --> FIXED PID PRINTING TWICE
    while(run!=0){
+=======
+   if(child!=0)
+   {
+      waitpid(child,&status,0);   
+   }	
+   printf("%d\n",getpid()); 
+
+		
+      signal(SIGINT,INThandler);
+   while(run!=0)
+   {
+>>>>>>> 660a410e20132c24c0431569417a0e4e2f954a2b
       struct timespec time1;
       int num;
 
       time1.tv_sec = 1;
       time1.tv_nsec = 0;
       num = nanosleep(&time1,NULL);
+<<<<<<< HEAD
       if(num<0)
          printf("woops\n"); //filler
  
@@ -48,6 +62,11 @@ int main(int argc, char **argv)
      //same time. I fixed this with the conditional up top
      //so that only the child process executes and the parent waits. 
       else if(num==0){
+=======
+       
+      if(num==0)
+      {
+>>>>>>> 660a410e20132c24c0431569417a0e4e2f954a2b
 	ssize_t bytes; 
 	const int STDOUT = 1; 
 	bytes = write(STDOUT, "Still here.\n", 10); 
@@ -56,7 +75,6 @@ int main(int argc, char **argv)
 	   exit(-999);
       }
       
-      signal(SIGINT,INThandler);
      
      /* //If user hits crtl-c
       
@@ -74,6 +92,7 @@ int main(int argc, char **argv)
 //num value is less than zero and prints "woops";
 void INThandler(int sig)
 {
+<<<<<<< HEAD
    signal(sig,SIG_IGN);
    ssize_t bytes; 
    const int STDOUT = 1; 
@@ -81,4 +100,9 @@ void INThandler(int sig)
    if(bytes != 10) 
       exit(-999);
    signal(SIGINT,INThandler);
+=======
+   //signal(sig,SIG_IGN);
+   write(1, "Nice try.\n", 10); 
+   //signal(SIGINT,INThandler);
+>>>>>>> 660a410e20132c24c0431569417a0e4e2f954a2b
 }

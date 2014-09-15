@@ -115,11 +115,21 @@ void eval(char *cmdline)
 	//arg=(char**)malloc(sizeof(*cmdline));
 	int bg;
 	
+<<<<<<< HEAD
 	bg = parseline(cmdline,arg);	
 	//Here I checked for empty command line
 	if(bg == 1) {
 		return;
 	}
+=======
+	bg = parseline(cmdline,arg);
+	//Check NULL *cmdline
+	if(bg==1)
+	{
+		printf("EMPTY\n");
+	}
+	
+>>>>>>> 660a410e20132c24c0431569417a0e4e2f954a2b
 	else if(builtin_cmd(arg)==1)
 	{
 		return;
