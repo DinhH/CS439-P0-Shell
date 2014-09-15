@@ -1,4 +1,4 @@
-/* 
+e* 
  * psh - A prototype tiny shell program with job control
  * 
  * <Put your name and login ID here>
@@ -105,31 +105,15 @@ int main(int argc, char **argv)
 void eval(char *cmdline) 
 {
 	char *arg[MAXLINE];
-	/*printf(" %s\n ",cmdline);
-	if(strcmp(cmdline,NULL)==0)
-	{
-		printf("woo");
-		return;
-	}
-	else*/
-	//arg=(char**)malloc(sizeof(*cmdline));
 	int bg;
 	
-<<<<<<< HEAD
-	bg = parseline(cmdline,arg);	
-	//Here I checked for empty command line
-	if(bg == 1) {
-		return;
-	}
-=======
 	bg = parseline(cmdline,arg);
 	//Check NULL *cmdline
 	if(bg==1)
 	{
-		printf("EMPTY\n");
+		return;
 	}
 	
->>>>>>> 660a410e20132c24c0431569417a0e4e2f954a2b
 	else if(builtin_cmd(arg)==1)
 	{
 		return;
@@ -161,6 +145,11 @@ void eval(char *cmdline)
  */
 int builtin_cmd(char **argv) 
 {
+	/*if(&argv==0)
+	{	
+		exit(0);
+	}*/
+	//Quit Statement?
 	if(strcmp(argv[0],"quit")==0){
 		exit(1);
 	}
