@@ -116,7 +116,13 @@ void eval(char *cmdline)
 	int bg;
 	
 	bg = parseline(cmdline,arg);
-	if(builtin_cmd(arg)==1)
+	//Check NULL *cmdline
+	if(bg==1)
+	{
+		printf("EMPTY\n");
+	}
+	
+	else if(builtin_cmd(arg)==1)
 	{
 		return;
 	}

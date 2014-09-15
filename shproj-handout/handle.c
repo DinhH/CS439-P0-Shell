@@ -31,10 +31,12 @@ int main(int argc, char **argv)
    
    if(child!=0)
    {
-      waitpid(child,&status,0); //EXPLAINATION BELOW  
+      waitpid(child,&status,0);   
    }	
-   printf("%d\n",getpid()); // --> FIXED PID PRINTING TWICE
-	
+   printf("%d\n",getpid()); 
+
+		
+      signal(SIGINT,INThandler);
    while(run!=0)
    {
       struct timespec time1;
@@ -43,15 +45,8 @@ int main(int argc, char **argv)
       time1.tv_sec = 1;
       time1.tv_nsec = 0;
       num = nanosleep(&time1,NULL);
-      if(num<0)
-         printf("woops\n"); //filler
- 
-     //Still Here prints funky
-     //EXPLAINATION: our code was printing funky because
-     //the child and parent were executing the code at the 
-     //same time. I fixed this with the conditional up top
-     //so that only the child process executes and the parent waits. 
-      else if(num==0)
+       
+      if(num==0)
       {
 	ssize_t bytes; 
 	const int STDOUT = 1; 
@@ -61,7 +56,6 @@ int main(int argc, char **argv)
 	   exit(-999);
       }
       
-      signal(SIGINT,INThandler);
      
      /* //If user hits crtl-c
       
@@ -81,11 +75,7 @@ int main(int argc, char **argv)
 //num value is less than zero and prints "woops";
 void INThandler(int sig)
 {
-   signal(sig,SIG_IGN);
-   ssize_t bytes; 
-   const int STDOUT = 1; 
-   bytes = write(STDOUT, "Nice try.\n", 10); 
-   if(bytes != 10) 
-      exit(-999);
-   signal(SIGINT,INThandler);
+   //signal(sig,SIG_IGN);
+   write(1, "Nice try.\n", 10); 
+   //signal(SIGINT,INThandler);
 }
