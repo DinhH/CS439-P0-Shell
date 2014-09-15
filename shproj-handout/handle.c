@@ -26,17 +26,13 @@ int main(int argc, char **argv)
    int status;
    int run = 1; //if kill hasn't been called
 
-   
    child = fork();
    
-   if(child!=0)
-   {
-      waitpid(child,&status,0); //EXPLAINATION BELOW  
-   }	
+	if(child!=0){
+		 waitpid(child,&status,0); //EXPLAINATION BELOW  
+	}
    printf("%d\n",getpid()); // --> FIXED PID PRINTING TWICE
-	
-   while(run!=0)
-   {
+   while(run!=0){
       struct timespec time1;
       int num;
 
@@ -51,8 +47,7 @@ int main(int argc, char **argv)
      //the child and parent were executing the code at the 
      //same time. I fixed this with the conditional up top
      //so that only the child process executes and the parent waits. 
-      else if(num==0)
-      {
+      else if(num==0){
 	ssize_t bytes; 
 	const int STDOUT = 1; 
 	bytes = write(STDOUT, "Still here.\n", 10); 
@@ -72,9 +67,7 @@ int main(int argc, char **argv)
          if(bytes != 10) 
          exit(-999);
       }*/
-     
    }   
-   
   return 0;
 }
 //ISSUES: ^C prints when running; sometimes nanosecond
@@ -84,7 +77,7 @@ void INThandler(int sig)
    signal(sig,SIG_IGN);
    ssize_t bytes; 
    const int STDOUT = 1; 
-   bytes = write(STDOUT, "Nice try.\n", 10); 
+   bytes = write(STDOUT, "Nice try.\n", 10); //This only print once 
    if(bytes != 10) 
       exit(-999);
    signal(SIGINT,INThandler);

@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 */
 void eval(char *cmdline) 
 {
-	char **arg;
+	char *arg[MAXLINE];
 	/*printf(" %s\n ",cmdline);
 	if(strcmp(cmdline,NULL)==0)
 	{
@@ -112,11 +112,15 @@ void eval(char *cmdline)
 		return;
 	}
 	else*/
-	arg=(char**)malloc(sizeof(*cmdline));
+	//arg=(char**)malloc(sizeof(*cmdline));
 	int bg;
 	
 	bg = parseline(cmdline,arg);	
-	if(builtin_cmd(arg)==1)
+	//Here I checked for empty command line
+	if(bg == 1) {
+		return;
+	}
+	else if(builtin_cmd(arg)==1)
 	{
 		return;
 	}
@@ -147,11 +151,6 @@ void eval(char *cmdline)
  */
 int builtin_cmd(char **argv) 
 {
-	/*if(&argv==0)
-	{	
-		exit(0);
-	}*/
-	//Quit Statement?
 	if(strcmp(argv[0],"quit")==0){
 		exit(1);
 	}
