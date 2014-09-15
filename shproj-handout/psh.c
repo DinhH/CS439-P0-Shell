@@ -122,7 +122,7 @@ void eval(char *cmdline)
 	}
 	else
 	{
-		int child = fork();
+		pid_t child = fork();
 		int status;
 		if(child==0)
 		{
