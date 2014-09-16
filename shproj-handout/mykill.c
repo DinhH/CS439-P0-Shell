@@ -9,5 +9,7 @@
 
 int main(int argc, char **argv)
 {
+	pid_t process1;
+	kill(getpid(),SIGUSR1);
   return 0;
 }
