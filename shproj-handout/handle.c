@@ -18,34 +18,33 @@
  * second.
  */
 
-void INThandler(int);
-
-int main(int argc, char **argv)
-{
-	pid_t child;
+void INThandler(int sig);
+void USRhandler(int sig);
+int main(int argc, char **argv){
+	pid_t process;
+	int status;
 	printf("%d\n",getpid()); // --> FIXED PID PRINTING TWICE
    	Signal(SIGINT,INThandler);
-   	
-   	int run = 1; //if kill hasn't been called
-	//the way we created the struct was wrong. So I tried the struct to a pointer
+	Signal(SIGUSR1,USRhandler);
+	int run = 1; 
+	
 	struct timespec* time1= (struct timespec*)malloc(sizeof(struct timespec));
-	//and I think we only need the nano second.
 	time1->tv_nsec = 10000000;
       	int x;
-
+	
 	while(run==1){
-		//I used the for loop to multifly out to 1 second. (10000000*100 = 1 second)
-		for (x=0; x <100; x++) {//I am not sure if the for loop is the best 
-		//we don't need the "&" anymore because it's a pointer now
-		nanosleep(time1,0);
+		
+		for (x=0; x <100; x++) { 
+			nanosleep(time1,0);
 		}
-		write(1, "Still Here.\n", 12); 
+		write(1, "Still Here\n", 12);
 	}   
 	return 0;
 }
-//ISSUES: ^C prints when running; sometimes nanosecond
-//num value is less than zero and prints "woops";
-void INThandler(int sig)
-{
-   write(1, "Nice try.\n", 10);
+void INThandler(int sig){
+	write(1,"Nice try.\n", 10);
+}
+void USRhandler(int sig){
+	write(1,"exiting\n", 9);
+	exit(1);
 }
