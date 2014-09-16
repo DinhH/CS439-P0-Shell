@@ -9,5 +9,8 @@
 
 int main(int argc, char **argv)
 {
+	int arg;
+	arg = atoi(argv[1]);
+	kill(arg,SIGUSR1);	
   return 0;
 }
