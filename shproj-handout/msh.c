@@ -1,6 +1,5 @@
 /* 
- * msh - A mini shell program with job control
- * 
+ * msh - A mini shell program with job control * 
  * <Put your name and login ID here>
  */
 #include <stdio.h>
@@ -108,7 +107,7 @@ int main(int argc, char **argv)
     } 
 
     exit(0); /* control never reaches here */
-}
+}  
   
 /* 
  * eval - Evaluate the command line that the user has just typed in
@@ -121,11 +120,49 @@ int main(int argc, char **argv)
  * background children don't receive SIGINT (SIGTSTP) from the kernel
  * when we type ctrl-c (ctrl-z) at the keyboard.  
 */
+int bg;
 void eval(char *cmdline) 
 {
-    return;
-}
+    	char *arg[MAXLINE];
+	pid_t child;
+	int status;
 
+	bg = parseline(cmdline,arg);
+	if (bg==1) 
+	{
+		if(arg[0]==NULL){
+			return;
+		}
+		else{ 
+			execv(arg[0],arg);
+		}
+	}	
+	/*else if(bg==0)
+	{
+		//wait for running command to terminate
+	}*/
+	else if(builtin_cmd(arg)==1)
+	{
+		int val = execv(arg[0],arg);
+		return;	
+		//exit(val);
+	}
+	else
+	{
+		child = fork();
+		if(child!=0) //Parent
+		{
+			waitpid(child,&status,0);	
+		}
+		else//Child
+		{
+			int val = execv(arg[0],arg);
+			exit(val);
+		}
+
+		return;
+	}
+}
 
 /* 
  * builtin_cmd - If the user has typed a built-in command then execute
@@ -135,7 +172,14 @@ void eval(char *cmdline)
  */
 int builtin_cmd(char **argv) 
 {
-    return 0;     /* not a builtin command */
+	if(strcmp(argv[0],"quit")==0)
+		exit(1);
+	else if(bg==0)
+		do_bgfg(argv);
+	else if(strcmp(argv[0],"jobs")==0)
+		return(1);
+	
+	return 0;     /* not a builtin command */
 }
 
 /* 
@@ -143,7 +187,16 @@ int builtin_cmd(char **argv)
  */
 void do_bgfg(char **argv) 
 {
-    return;
+	if (bg==1) 
+	{
+		if(arg[0]==NULL){
+			return;
+		}
+		else{ 
+			execv(arg[0],arg);
+		}
+	} 
+	return;
 }
 
 /* 

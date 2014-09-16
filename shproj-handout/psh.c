@@ -111,7 +111,12 @@ void eval(char *cmdline)
 	//Check NULL *cmdline
 	if(bg==1)
 	{
+		if(arg[0]==NULL) {
 		return;
+		}
+		else{
+		execv(arg[0],arg);
+		}
 	}
 	
 	else if(builtin_cmd(arg)==1)

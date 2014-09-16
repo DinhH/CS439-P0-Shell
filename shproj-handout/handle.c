@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include "util.h"
 
-//**********BIG PROBLEM IS THAT WE CAN'T DO KILL********
 /*
  * First, print out the process ID of this process.
  *
@@ -33,7 +32,6 @@ int main(int argc, char **argv){
       	int x;
 	
 	while(run==1){
-		
 		for (x=0; x <100; x++) { 
 			nanosleep(time1,0);
 		}
