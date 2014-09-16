@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     } 
 
     exit(0); /* control never reaches here */
-}
+}  
   
 /* 
  * eval - Evaluate the command line that the user has just typed in
@@ -123,7 +123,23 @@ int main(int argc, char **argv)
 */
 void eval(char *cmdline) 
 {
-    return;
+    	char *arg[MAXLINE];
+	int bg;
+	pid_t child;
+	int status;
+
+	bg = parseline(cmdline,arg);
+	
+	if(builtin_cmd(arg)==1)
+	{
+		child = fork();
+		if(child!=0)
+			waitpid(child,&status,0);
+		int val = execv(arg[0],arg);
+		exit(val);
+		//DO shit here
+	}
+	return;
 }
 
 
@@ -135,7 +151,10 @@ void eval(char *cmdline)
  */
 int builtin_cmd(char **argv) 
 {
-    return 0;     /* not a builtin command */
+	if(strcmp(argv[0],"quit")==0)
+		exit(1);
+	//else if(strcmp(==0)
+	return 0;     /* not a builtin command */
 }
 
 /* 
