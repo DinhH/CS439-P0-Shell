@@ -101,19 +101,6 @@ doFib(int n, int doPrint)
 		}
 	}
 }
-/*	if (child1 == 0) {
-	printf("child pid is : %d\n",child1);
-	}
-	else {
-		child2 = fork();
-		if (child2 == 0) {
-		printf("child 2 pid: %d\n" ,child2);
-		}
-		else {
-	printf("the value of the parent pid is : %d\n", getpid());
-		}
-	}
-}*/
-	//printf("child pid is : %d\n",child1);
+
 
 

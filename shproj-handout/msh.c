@@ -127,6 +127,7 @@ void eval(char *cmdline)
 	pid_t child;
 	int status;
 
+	//Signal(SIGINT,sigint_handler);
 	bg = parseline(cmdline,arg);
 	if (bg==1) 
 	{
@@ -136,12 +137,12 @@ void eval(char *cmdline)
 		else{ 
 			execv(arg[0],arg);
 		}
-	}	
+	}
 	/*else if(bg==0)
 	{
 		//wait for running command to terminate
 	}*/
-	else if(builtin_cmd(arg)==1)
+	if(builtin_cmd(arg)==1)
 	{
 		int val = execv(arg[0],arg);
 		return;	
@@ -178,8 +179,9 @@ int builtin_cmd(char **argv)
 		do_bgfg(argv);
 	else if(strcmp(argv[0],"jobs")==0)
 		return(1);
-	
-	return 0;     /* not a builtin command */
+	else{
+	//printf("this is a non-build-in : %s\n",argv[0]);
+	return 0;}     /* not a builtin command */
 }
 
 /* 
@@ -189,13 +191,27 @@ void do_bgfg(char **argv)
 {
 	if (bg==1) 
 	{
-		if(arg[0]==NULL){
+		if(argv[0]==NULL){
 			return;
 		}
 		else{ 
-			execv(arg[0],arg);
+			execv(argv[0],argv);
 		}
 	} 
+
+	else
+	{
+		pid_t kid=fork();
+		if(kid!=0)
+		{
+			waitfg(kid);
+		}
+		else
+		{
+			
+		}
+	}	
+
 	return;
 }
 
@@ -230,6 +246,11 @@ void sigchld_handler(int sig)
  */
 void sigint_handler(int sig) 
 {
+	//don't need to have condition check
+	if(sig==SIGINT)
+	{
+		//send to foreground
+	}
     return;
 }
 
