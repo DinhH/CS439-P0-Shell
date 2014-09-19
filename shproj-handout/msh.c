@@ -136,7 +136,7 @@ void eval(char *cmdline)
 	
 	if(builtin_cmd(arg)==1)
 	{
-		int val = execv(arg[0],arg);
+	//	int val = execv(arg[0],arg);
 		return;	
 		//exit(val);
 	}
@@ -147,7 +147,9 @@ void eval(char *cmdline)
 		child=fork();
 		if(child==0)
 		{
-			pgid = setpgid(child,pgid);
+			//put the child in a new process group whose group ID 
+                        //is identical to the child's PID
+			pgid = setpgid(0,0);
 			sigprocmask(SIG_UNBLOCK,set,oldset);
 			int val = execv(arg[0],arg);
 			if(bg==0) // if foreground
@@ -170,10 +172,16 @@ int builtin_cmd(char **argv)
 {
 	if(strcmp(argv[0],"quit")==0)
 		exit(1);
-	else if(argv[0]=="fg"||argv[0]=="bg"||bg==1)
+	//FG or BG commands
+	else if(argv[0]=="fg"||argv[0]=="bg"){
 		do_bgfg(argv);
-	else if(strcmp(argv[0],"jobs")==0)
 		return(1);
+	}
+	//jobs command lists all background jobs
+	else if(strcmp(argv[0],"jobs")==0){
+		listjobs(jobs);
+		return(1);
+	}
 	
 	return 0;     /* not a builtin command */
 }
@@ -183,20 +191,88 @@ int builtin_cmd(char **argv)
  */
 void do_bgfg(char **argv) 
 {	
-/*	if(argv[1]==0)
+	struct job_t *myjob;
+	if(argv[1]==0)
 	{
 		printf("Arguement for the Command Line is Missing");
+		return;
 	}
-	else if(arg[0] is num)
+	//Process BG built-in Command
+	else if(argv[0]=="bg")
 	{
-		struct job_t *p = getjobpid(jobs,arg[1]);
+		//PID
+		if(argv[1][0]!='%'){
+			int pid = atoi(argv[1]);
+			kill(-(pid),SIGCONT);
+			myjob = getjobpid(jobs,pid);
+		
+			//If state is ST
+			if(myjob->state==3){
+				myjob->state=2;
+			}
+			
+		}
+		//JID (with %)
+		else{
+			int jid = rm(argv);
+			kill(-(jid),SIGCONT);
+			myjob = getjobjid(jobs,jid);
+		
+			//If state is ST	
+			if(myjob->state==3){
+				myjob->state=2;
+			}
+		}
 	}
-	else if(arg[0] is a job id with % sign)
+
+	//Process FG built-in Command
+	else if(argv[0]=="fg")
 	{
-		struct job_t *p = getjobjid(jobs,arg[1]);
+                //PID
+                if(argv[1][0]!='%'){
+                        int pid = atoi(argv[1]);
+                        kill(-(pid),SIGCONT);
+                        myjob = getjobpid(jobs,pid);
+
+                        //If state is ST
+                        if(myjob->state==3){
+                                myjob->state=1;
+                        }
+			//If state is FG
+			else if(myjob->state==2){
+				myjob->state=1;
+				waitfg(pid);
+			}
+                        
+                }
+                //JID (with %)
+                else{
+                        int jid = rm(argv);
+                        kill(-(jid),SIGCONT);
+                        myjob = getjobjid(jobs,jid);
+			
+			//If state is ST
+                        if(myjob->state==3){
+                                myjob->state=1;
+                        }
+			//If state is FG
+			else if(myjob->state==2){
+				myjob->state=1;
+				waitfg(jid);
+			}
+                }
+
 	}	
-	return; */
+	return;
 }
+
+//Removes % sign and returns JID to process//
+int rm(char **argv)
+{
+	argv[1][0]='0';
+	return atoi(argv[1]);
+}
+
 
 /* 
  * waitfg - Block until process pid is no longer the foreground process
@@ -252,6 +328,11 @@ void sigtstp_handler(int sig)
  *********************/
 
 
+//Created by Kahli
+void sigconti_handler(int sig)
+{
+	return;
+}
 
 /***********************
  * Other helper routines
