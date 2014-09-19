@@ -128,30 +128,15 @@ void eval(char *cmdline)
 	int status;
 	sigset_t *set, *oldset;
 
-	//Signal(SIGINT,sigint_handler);
 	bg = parseline(cmdline,arg);
 	if(arg[0]==NULL)
 	{
-<<<<<<< HEAD
-		if(arg[0]==NULL){
-			return;
-		}
-		else{ 
-			execv(arg[0],arg);
-		}
-	}
-	/*else if(bg==0)
-	{
-		//wait for running command to terminate
-	}*/
-=======
 		return;
 	}
 	
->>>>>>> 680d946d9631724a1b153a1832d41c52826e917e
 	if(builtin_cmd(arg)==1)
 	{
-		int val = execv(arg[0],arg);
+	//	int val = execv(arg[0],arg);
 		return;	
 		//exit(val);
 	}
@@ -162,11 +147,16 @@ void eval(char *cmdline)
 		child=fork();
 		if(child==0)
 		{
-			pgid = setpgid(child,pgid);
+			//put the child in a new process group whose group ID 
+                        //is identical to the child's PID
+			pgid = setpgid(0,0);
 			sigprocmask(SIG_UNBLOCK,set,oldset);
 			int val = execv(arg[0],arg);
-			if(bg==0) // if foreground
+			if(bg==0){ // if foreground
+				Signal(SIGINT,sigint_handler);
 				waitfg(pgid);
+				
+			}
 		}
 		else//parent
 			addjob(jobs,pgid,bg,cmdline);
@@ -185,13 +175,18 @@ int builtin_cmd(char **argv)
 {
 	if(strcmp(argv[0],"quit")==0)
 		exit(1);
-	else if(argv[0]=="fg"||argv[0]=="bg"||bg==1)
+	//FG or BG commands
+	else if(strcmp(argv[0],"fg")==0||(strcmp(argv[0],"bg")==0)){
 		do_bgfg(argv);
-	else if(strcmp(argv[0],"jobs")==0)
 		return(1);
-	else{
-	//printf("this is a non-build-in : %s\n",argv[0]);
-	return 0;}     /* not a builtin command */
+	}
+	//jobs command lists all background jobs
+	else if(strcmp(argv[0],"jobs")==0){
+		listjobs(jobs);
+		return(1);
+	}
+	
+	return 0;     /* not a builtin command */
 }
 
 /* 
@@ -199,45 +194,88 @@ int builtin_cmd(char **argv)
  */
 void do_bgfg(char **argv) 
 {	
-/*	if(argv[1]==0)
+	struct job_t *myjob;
+	if(argv[1]==0)
 	{
-<<<<<<< HEAD
-		if(argv[0]==NULL){
-			return;
-		}
-		else{ 
-			execv(argv[0],argv);
-		}
-	} 
-
-	else
+		printf("Arguement for the Command Line is Missing");
+		return;
+	}
+	//Process BG built-in Command
+	else if(argv[0]=="bg")
 	{
-		pid_t kid=fork();
-		if(kid!=0)
-		{
-			waitfg(kid);
-		}
-		else
-		{
+		//PID
+		if(argv[1][0]!='%'){
+			int pid = atoi(argv[1]);
+			kill(-(pid),SIGCONT);
+			myjob = getjobpid(jobs,pid);
+		
+			//If state is ST
+			if(myjob->state==3){
+				myjob->state=2;
+			}
 			
 		}
-	}	
+		//JID (with %)
+		else{
+			int jid = rm(argv);
+			kill(-(jid),SIGCONT);
+			myjob = getjobjid(jobs,jid);
+		
+			//If state is ST	
+			if(myjob->state==3){
+				myjob->state=2;
+			}
+		}
+	}
 
-	return;
-=======
-		printf("Arguement for the Command Line is Missing");
-	}
-	else if(arg[0] is num)
+	//Process FG built-in Command
+	else if(argv[0]=="fg")
 	{
-		struct job_t *p = getjobpid(jobs,arg[1]);
-	}
-	else if(arg[0] is a job id with % sign)
-	{
-		struct job_t *p = getjobjid(jobs,arg[1]);
+                //PID
+                if(argv[1][0]!='%'){
+                        int pid = atoi(argv[1]);
+                        kill(-(pid),SIGCONT);
+                        myjob = getjobpid(jobs,pid);
+
+                        //If state is ST
+                        if(myjob->state==3){
+                                myjob->state=1;
+                        }
+			//If state is FG
+			else if(myjob->state==2){
+				myjob->state=1;
+				waitfg(pid);
+			}
+                        
+                }
+                //JID (with %)
+                else{
+                        int jid = rm(argv);
+                        kill(-(jid),SIGCONT);
+                        myjob = getjobjid(jobs,jid);
+			
+			//If state is ST
+                        if(myjob->state==3){
+                                myjob->state=1;
+                        }
+			//If state is FG
+			else if(myjob->state==2){
+				myjob->state=1;
+				waitfg(jid);
+			}
+                }
+
 	}	
-	return; */
->>>>>>> 680d946d9631724a1b153a1832d41c52826e917e
+	return;
 }
+
+//Removes % sign and returns JID to process//
+int rm(char **argv)
+{
+	argv[1][0]='0';
+	return atoi(argv[1]);
+}
+
 
 /* 
  * waitfg - Block until process pid is no longer the foreground process
@@ -265,11 +303,23 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig) 
 {
-	pid_child;
+	pid_t child;
 	int status;
-	while ((pid = waitpid(-1,&status, WNOHANG | WUNTRACED)) > 0) {
-		deletejob(jobs,child);
-	}
+	while ((child = waitpid(-1,&status, WNOHANG | WUNTRACED)) > 0) {
+		
+		if(WIFEXITED(status)) {
+			deletejob(jobs,child);
+		}
+		else if (WIFSIGNALED(status)) {
+			printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(jobs,child), child, WTERMSIG(status));			
+			deletejob(jobs,child);
+		}
+		else (WIFSTOPPED(status)) {
+			struct job_t* myjobs = getjobpid(jobs,child);
+			myjobs->state = 3;
+			printf("Job [%d] (%d) stopped by signal %d\n", pid2jid(jobs,child), pid, WSTOPSIG(status));
+		}
+	}	
     return;
 }
 
@@ -281,9 +331,10 @@ void sigchld_handler(int sig)
 void sigint_handler(int sig) 
 {
 	//don't need to have condition check
-	if(sig==SIGINT)
-	{
-		//send to foreground
+	pid_t  myjobs;
+	myjobs = fgpid(jobs);
+	if(myjobs != 0) {
+		kill(-(myjobs), SIGINT);
 	}
     return;
 }
@@ -295,13 +346,21 @@ void sigint_handler(int sig)
  */
 void sigtstp_handler(int sig) 
 {
+	pid_t myjobs;
+	struct job_t* cjobs;
+        myjobs = fgpid(jobs);
+
+	if (myjobs != 0) {
+		cjobs = getjobpid(jobs, myjobs);
+		kill(-myjobs,SIGTSTP);
+		cjobs->state = 3;
+	}
     return;
 }
 
 /*********************
  * End signal handlers
  *********************/
-
 
 
 /***********************
@@ -333,6 +392,4 @@ void sigquit_handler(int sig)
        exit(-999);
     exit(1);
 }
-
-
 
