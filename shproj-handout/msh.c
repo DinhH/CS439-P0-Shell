@@ -124,13 +124,15 @@ int bg;
 void eval(char *cmdline) 
 {
     	char *arg[MAXLINE];
-	pid_t child;
+	pid_t child,pgid;
 	int status;
+	sigset_t *set, *oldset;
 
 	//Signal(SIGINT,sigint_handler);
 	bg = parseline(cmdline,arg);
-	if (bg==1) 
+	if(arg[0]==NULL)
 	{
+<<<<<<< HEAD
 		if(arg[0]==NULL){
 			return;
 		}
@@ -142,25 +144,33 @@ void eval(char *cmdline)
 	{
 		//wait for running command to terminate
 	}*/
+=======
+		return;
+	}
+	
+>>>>>>> 680d946d9631724a1b153a1832d41c52826e917e
 	if(builtin_cmd(arg)==1)
 	{
 		int val = execv(arg[0],arg);
 		return;	
 		//exit(val);
 	}
+	
 	else
 	{
-		child = fork();
-		if(child!=0) //Parent
+		sigprocmask(SIG_BLOCK,set,oldset);
+		child=fork();
+		if(child==0)
 		{
-			waitpid(child,&status,0);	
-		}
-		else//Child
-		{
+			pgid = setpgid(child,pgid);
+			sigprocmask(SIG_UNBLOCK,set,oldset);
 			int val = execv(arg[0],arg);
-			exit(val);
+			if(bg==0) // if foreground
+				waitfg(pgid);
 		}
-
+		else//parent
+			addjob(jobs,pgid,bg,cmdline);
+			sigprocmask(SIG_UNBLOCK,set,oldset);
 		return;
 	}
 }
@@ -175,7 +185,7 @@ int builtin_cmd(char **argv)
 {
 	if(strcmp(argv[0],"quit")==0)
 		exit(1);
-	else if(bg==0)
+	else if(argv[0]=="fg"||argv[0]=="bg"||bg==1)
 		do_bgfg(argv);
 	else if(strcmp(argv[0],"jobs")==0)
 		return(1);
@@ -188,9 +198,10 @@ int builtin_cmd(char **argv)
  * do_bgfg - Execute the builtin bg and fg commands
  */
 void do_bgfg(char **argv) 
-{
-	if (bg==1) 
+{	
+/*	if(argv[1]==0)
 	{
+<<<<<<< HEAD
 		if(argv[0]==NULL){
 			return;
 		}
@@ -213,6 +224,19 @@ void do_bgfg(char **argv)
 	}	
 
 	return;
+=======
+		printf("Arguement for the Command Line is Missing");
+	}
+	else if(arg[0] is num)
+	{
+		struct job_t *p = getjobpid(jobs,arg[1]);
+	}
+	else if(arg[0] is a job id with % sign)
+	{
+		struct job_t *p = getjobjid(jobs,arg[1]);
+	}	
+	return; */
+>>>>>>> 680d946d9631724a1b153a1832d41c52826e917e
 }
 
 /* 
@@ -220,6 +244,11 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
+	struct job_t *p= getjobpid(jobs,pid);
+	while(p->state==0)
+	{
+		sleep(0);
+	} 	
     return;
 }
 
@@ -236,6 +265,11 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig) 
 {
+	pid_child;
+	int status;
+	while ((pid = waitpid(-1,&status, WNOHANG | WUNTRACED)) > 0) {
+		deletejob(jobs,child);
+	}
     return;
 }
 
