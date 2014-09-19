@@ -1,26 +1,26 @@
 ################
 YOUR INFO
 ################
-Name1:
-EID1:
-CS login:
-Email:
-Unique Number:
+Name1: Kahli Holmes
+EID1: kh27624
+CS login: kahlih
+Email: kahliholmes@utexas.edu
+Unique Number: 53020
 
-Slip days used:
+Slip days used: 0
 
 ****EACH student submits a (unique) design document.****
 
 ################
 YOUR PARTNER'S INFO
 ################
-Name1:
-EID1:
-CS login:
-Email:
+Name1: Dinh Huynh
+EID1: 
+CS log in:
+Email: 
 Unique Number:
 
-Your partner's ranking (scale below):
+Your partner's ranking (scale below): Excellent!
 
 ################
 PARTNER EVALUATION SCALE
@@ -50,6 +50,7 @@ Preliminaries
 (1) If you have any preliminary comments on your submission, notes for
   the TAs, or extra credit, please give them here.
 
+
 (2) Please cite any offline or online sources you consulted while
   preparing your submission, other than the Linux documentation,
   course text, and lecture notes.
@@ -62,9 +63,26 @@ Questions regarding Part 0
   an input of 5?  Show the return value for each child process, numbering
   the processes beginning with 0 (the original process) and incrementing for
   each child process.
+	There will be 14 child processes created. 
+	
+				Parent:   5
+				       /    \
+				      /      \
+				  (n-1)      (n-2)
+				    4          3
+				   / \        / \
+				  /   \	     /   \		      
+			         3     2    2     1
+				/ \   / \  / \   
+                               2  1  1  0 1   0 
+			      / \
+			     1   1	
 
 (2) In part 0.3, which flavor of exec did you choose to use?  Why?
 
+	We used execv(const char *path, char *const argv[]), because it took in
+	the path of the file, plus the remainder of the command line  arguements
+	and executed the instruction with those conditions.
 
 ################
 Questions regarding Part 1
@@ -72,17 +90,24 @@ Questions regarding Part 1
 (1) In the provided utility function Signal(), what does the call to
   sigaction() do?  Why was sigaction() used instead of signal()?
 
+	
+	
 (2) What is the last assembly language instruction executed by the
   signal handler function that you write?  (You may choose either signal
   handler.)
 
+	
+
 (3) After the instruction identified in the previous question executes, 
   what is the next assembly language instruction executed?
+
+	
 
 (4) When the signal handler finishes running, it must restore all of
   the registers from the interrupted thread to exactly their values
   before the signal occurred. How is this done?
 
+	
 
 ################
 Questions regarding Part 2
