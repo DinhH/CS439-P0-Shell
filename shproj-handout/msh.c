@@ -151,26 +151,23 @@ void eval(char *cmdline)
                         //is identical to the child's PID
 			pgid = setpgid(0,0);
 			sigprocmask(SIG_UNBLOCK,set,oldset);
-			Signal(SIGINT,sigint_handler); 
-			Signal(SIGTSTP,sigtstp_handler);
-
 			int val = execv(arg[0],arg);
-			if(bg==0){ // if foreground
-				//Signal(SIGINT,sigint_handler);
-				waitfg(pgid);
-				
-			}
 		}
 		else//parent
 		{
-			addjob(jobs,pgid,bg,cmdline);
-			if(bg){
-				struct job_t *myjob = myjob = getjobpid(jobs,pgid);
+			if(bg){				
+				addjob(jobs,child,BG,cmdline);
+				sigprocmask(SIG_UNBLOCK,set,oldset);
+				struct job_t *myjob = myjob = getjobpid(jobs,child);
 				printf("[%d] (%d) ",myjob->jid,myjob->pid);
 				printf("%s",myjob->cmdline);
 			}
+			else if (bg==0){ // if foreground
+				//Signal(SIGINT,sigint_handler);
+			addjob(jobs,child,FG,cmdline);
 			sigprocmask(SIG_UNBLOCK,set,oldset);
-
+			waitfg(pgid);
+			}
 		}
 		return;
 	}
@@ -223,8 +220,7 @@ void do_bgfg(char **argv)
 			//If state is ST
 			if(myjob->state==3){
 				myjob->state=2;
-			}
-			
+			}	
 		}
 		//JID (with %)
 		else{
@@ -238,7 +234,6 @@ void do_bgfg(char **argv)
 			}
 		}
 	}
-
 	//Process FG built-in Command
 	else if(argv[0]=="fg")
 	{
@@ -316,22 +311,25 @@ void sigchld_handler(int sig)
 {
 	pid_t child;
 	int status;
+	char buffer[MAXLINE];
 	while ((child = waitpid(-1,&status, WNOHANG | WUNTRACED)) > 0) {
 		
 		if(WIFEXITED(status)) {
 			deletejob(jobs,child);
 		}
 		else if (WIFSIGNALED(status)) {
-			printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(jobs,child), child, WTERMSIG(status));			
+			sprintf(buffer,"Job [%d] (%d) terminated by signal %d\n", pid2jid(jobs,child), child, WTERMSIG(status));
+			write(1, buffer,strlen(buffer));			
 			deletejob(jobs,child);
 		}
 		else if(WIFSTOPPED(status)) {
 			struct job_t* myjobs = getjobpid(jobs,child);
 			myjobs->state = 3;
-			printf("Job [%d] (%d) stopped by signal %d\n", pid2jid(jobs,child), child/*pid*/, WSTOPSIG(status));
+			sprintf(buffer,"Job [%d] (%d) stopped by signal %d\n", pid2jid(jobs,child), child/*pid*/, WSTOPSIG(status));
+			write(1,buffer,strlen(buffer));
 		}
 	}	
-    return;
+    	return;
 }
 
 /* 
@@ -347,7 +345,7 @@ void sigint_handler(int sig)
 	if(myjobs != 0) {
 		kill(-(myjobs), SIGINT);
 	}
-    return;
+    	return;
 }
 
 /*
@@ -366,7 +364,7 @@ void sigtstp_handler(int sig)
 		kill(-myjobs,SIGTSTP);
 		cjobs->state = 3;
 	}
-    return;
+    	return;
 }
 
 /*********************

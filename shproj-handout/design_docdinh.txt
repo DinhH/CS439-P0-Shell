@@ -1,13 +1,13 @@
 ################
 YOUR INFO
 ################
-Name1:
-EID1:
-CS login:
-Email:
-Unique Number:
+Name1:Dinh Huynh	
+EID1:dph584
+CS login:dinh4512
+Email:dinh_huynh4512@utexas.edu	
+Unique Number:53015
 
-Slip days used:
+Slip days used:0
 
 ****EACH student submits a (unique) design document.****
 
@@ -62,6 +62,10 @@ Questions regarding Part 0
   an input of 5?  Show the return value for each child process, numbering
   the processes beginning with 0 (the original process) and incrementing for
   each child process.
+		
+			5
+		4			3
+	3		2	2
 
 (2) In part 0.3, which flavor of exec did you choose to use?  Why?
 
