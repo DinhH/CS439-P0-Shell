@@ -50,6 +50,8 @@ Preliminaries
 (1) If you have any preliminary comments on your submission, notes for
   the TAs, or extra credit, please give them here.
 
+	Could discussion be more geared toward the projects? I think what would of been helpful
+	is practice using fork() and exec(), out of context of the project.
 
 (2) Please cite any offline or online sources you consulted while
   preparing your submission, other than the Linux documentation,

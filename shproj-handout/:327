@@ -151,9 +151,6 @@ void eval(char *cmdline)
                         //is identical to the child's PID
 			pgid = setpgid(0,0);
 			sigprocmask(SIG_UNBLOCK,set,oldset);
-			Signal(SIGINT,sigint_handler); 
-			Signal(SIGTSTP,sigtstp_handler);
-
 			int val = execv(arg[0],arg);
 			if(bg==0){ // if foreground
 				//Signal(SIGINT,sigint_handler);
@@ -164,11 +161,10 @@ void eval(char *cmdline)
 		else//parent
 		{
 			addjob(jobs,pgid,bg,cmdline);
-			if(bg){
-				struct job_t *myjob = myjob = getjobpid(jobs,pgid);
-				printf("[%d] (%d) ",myjob->jid,myjob->pid);
-				printf("%s",myjob->cmdline);
-			}
+			struct jobs_t *myjob = getjobpid(jobs,pid);
+			printf("[%d] (%d) ", myjob->jid, myjob->pid);
+			printf("%s",myjob->cmdline);
+			
 			sigprocmask(SIG_UNBLOCK,set,oldset);
 
 		}
