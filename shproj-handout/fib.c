@@ -57,8 +57,8 @@ int main(int argc, char **argv)
  * a new child for each call. Each process should call
  * doFib() exactly once.
  */
-static void 
-doFib(int n, int doPrint)
+//Kahli is driving
+static void doFib(int n, int doPrint)
 {
 	pid_t child1;
 	pid_t child2;
@@ -82,6 +82,7 @@ doFib(int n, int doPrint)
 	if (child1 == 0){
 		doFib(n-1, 0);//doesn't return;
 	}
+//End of Kahli driving, Dinh driving now
 	else {
 		waitpid(child1,&status1,0);	
 		val1 = WEXITSTATUS(status1);	
@@ -101,6 +102,6 @@ doFib(int n, int doPrint)
 		}
 	}
 }
-
+//End of Dinh driving.
 
 

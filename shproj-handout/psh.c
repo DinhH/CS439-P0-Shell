@@ -102,6 +102,7 @@ int main(int argc, char **argv)
  * run the job in the context of the child. If the job is running in
  * the foreground, wait for it to terminate and then return. 
 */
+//Dinh is driving
 void eval(char *cmdline) 
 {
 	char *arg[MAXLINE];
@@ -160,10 +161,7 @@ int builtin_cmd(char **argv)
 	}
     return 0;     /* not a builtin command */
 }
-
-
-
-
+//End of Dinh driving.
 
 /***********************
  * Other helper routines

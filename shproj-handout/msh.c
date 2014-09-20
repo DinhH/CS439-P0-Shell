@@ -120,6 +120,8 @@ int main(int argc, char **argv)
  * background children don't receive SIGINT (SIGTSTP) from the kernel
  * when we type ctrl-c (ctrl-z) at the keyboard.  
 */
+
+//Dinh driving now
 int bg;
 void eval(char *cmdline) 
 {
@@ -151,28 +153,31 @@ void eval(char *cmdline)
                         //is identical to the child's PID
 			pgid = setpgid(0,0);
 			sigprocmask(SIG_UNBLOCK,set,oldset);
-			int val = execv(arg[0],arg);
+			if(execv(arg[0],arg) < 0)
+			{
+				printf("invalid funciton\n");
+			}
 		}
 		else//parent
 		{
 			if(bg){				
 				addjob(jobs,child,BG,cmdline);
 				sigprocmask(SIG_UNBLOCK,set,oldset);
-				struct job_t *myjob = myjob = getjobpid(jobs,child);
+				struct job_t *myjob = getjobpid(jobs,child);
 				printf("[%d] (%d) ",myjob->jid,myjob->pid);
 				printf("%s",myjob->cmdline);
+				return;
 			}
 			else if (bg==0){ // if foreground
 				//Signal(SIGINT,sigint_handler);
-			addjob(jobs,child,FG,cmdline);
-			sigprocmask(SIG_UNBLOCK,set,oldset);
-			waitfg(pgid);
+				addjob(jobs,child,FG,cmdline);
+				sigprocmask(SIG_UNBLOCK,set,oldset);
+				waitfg(child);
+				return;
 			}
 		}
-		return;
 	}
 }
-
 /* 
  * builtin_cmd - If the user has typed a built-in command then execute
  *    it immediately.  
@@ -186,16 +191,17 @@ int builtin_cmd(char **argv)
 	//FG or BG commands
 	else if(strcmp(argv[0],"fg")==0||(strcmp(argv[0],"bg")==0)){
 		do_bgfg(argv);
-		return(1);
+		return 1;
 	}
 	//jobs command lists all background jobs
 	else if(strcmp(argv[0],"jobs")==0){
 		listjobs(jobs);
-		return(1);
+		return 1;
 	}
 	
 	return 0;     /* not a builtin command */
 }
+//end of Dinh driving, Kahli driving now
 
 /* 
  * do_bgfg - Execute the builtin bg and fg commands
@@ -282,7 +288,6 @@ int rm(char **argv)
 	return atoi(argv[1]);
 }
 
-
 /* 
  * waitfg - Block until process pid is no longer the foreground process
  */
@@ -295,7 +300,7 @@ void waitfg(pid_t pid)
 	} 	
     return;
 }
-
+//End of Kahli driving, Dinh driving now
 /*****************
  * Signal handlers
  *****************/
@@ -366,7 +371,7 @@ void sigtstp_handler(int sig)
 	}
     	return;
 }
-
+//End of Dinh driving
 /*********************
  * End signal handlers
  *********************/

@@ -1,19 +1,19 @@
 ################
 TEAM INFO
 ################
-Name1:
-EID1:
-CS login:
-Email:
-Unique Number:
+Name1: Kahli Holmes
+EID1: kh27624
+CS login: kahlih
+Email: kahliholmes@utexas.edu
+Unique Number: 53020
 
-Name2:
-EID2:
-CS login:
-Email:
-Unique Number:
+Name2: Dinh Huynh
+EID2: dph584
+CS login: dinh4512
+Email: dinh_huynh4512@utexas.edu
+Unique Number: 53015
 
-Slip days used:
+Slip days used: 0
 
 ################
 
@@ -24,7 +24,7 @@ Slip days used:
 CS:APP Shell Lab
 ################
 
-Files:
+Files: 
 
 Makefile	# Compiles your shell program and runs the tests
 README		# This file
